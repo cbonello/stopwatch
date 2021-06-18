@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stopwatch/src/stopwatch/stopwatch.dart';
 
 void main() {
   group('Stopwatch', () {
+    late SharedPreferences sharedPreferences;
     StopwatchCubit? stopwatchCubit;
     LapsCubit? lapsCubit;
 
-    setUp(() {
-      stopwatchCubit = StopwatchCubit();
-      lapsCubit = LapsCubit();
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+
+    setUp(() async {
+      sharedPreferences = await SharedPreferences.getInstance();
+      stopwatchCubit = StopwatchCubit(sharedPreferences: sharedPreferences);
+      lapsCubit = LapsCubit(sharedPreferences: sharedPreferences);
     });
 
     tearDown(() {

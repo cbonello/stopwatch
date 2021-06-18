@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../theme.dart';
 import '../stopwatch.dart';
 
 class StopwatchPage extends StatelessWidget {
-  const StopwatchPage({Key? key}) : super(key: key);
+  const StopwatchPage({
+    Key? key,
+    required this.sharedPreferences,
+  }) : super(key: key);
+
+  final SharedPreferences sharedPreferences;
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<StopwatchCubit>(
-          create: (BuildContext context) => StopwatchCubit(),
+          create: (BuildContext context) => StopwatchCubit(
+            sharedPreferences: sharedPreferences,
+          ),
         ),
         BlocProvider<LapsCubit>(
-          create: (BuildContext context) => LapsCubit(),
+          create: (BuildContext context) => LapsCubit(
+            sharedPreferences: sharedPreferences,
+          ),
         ),
       ],
       child: const StopwatchView(),
@@ -23,15 +33,8 @@ class StopwatchPage extends StatelessWidget {
   }
 }
 
-class StopwatchView extends StatefulWidget {
+class StopwatchView extends StatelessWidget {
   const StopwatchView({Key? key}) : super(key: key);
-
-  @override
-  _StopwatchViewState createState() => _StopwatchViewState();
-}
-
-class _StopwatchViewState extends State<StopwatchView> {
-  bool isRunning = false;
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +170,13 @@ class _ActionBar extends StatefulWidget {
 }
 
 class __ActionBarState extends State<_ActionBar> {
-  bool isRunning = false;
+  late bool isRunning;
+
+  @override
+  void initState() {
+    super.initState();
+    isRunning = context.read<StopwatchCubit>().isRunning;
+  }
 
   @override
   Widget build(BuildContext context) {

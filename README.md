@@ -8,6 +8,9 @@ A simple stopwatch for a fitness app.
 
 Code was tested on Android, Windows desktop and Flutter web.
 
+The `stopwatch running in the background functionality` can be tested by doing a
+hot restart (if running on an emulator).
+
 ## Testing
 
 ```bash
