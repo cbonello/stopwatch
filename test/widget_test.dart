@@ -6,9 +6,11 @@ import 'package:stopwatch/src/stopwatch/stopwatch.dart';
 void main() {
   group('Stopwatch', () {
     StopwatchCubit? stopwatchCubit;
+    LapsCubit? lapsCubit;
 
     setUp(() {
       stopwatchCubit = StopwatchCubit();
+      lapsCubit = LapsCubit();
     });
 
     tearDown(() {
@@ -20,8 +22,15 @@ void main() {
       (WidgetTester tester) async {
         await tester.pumpWidget(
           MaterialApp(
-            home: BlocProvider<StopwatchCubit>.value(
-              value: stopwatchCubit!,
+            home: MultiBlocProvider(
+              providers: <BlocProvider<dynamic>>[
+                BlocProvider<StopwatchCubit>.value(
+                  value: stopwatchCubit!,
+                ),
+                BlocProvider<LapsCubit>.value(
+                  value: lapsCubit!,
+                ),
+              ],
               child: const StopwatchView(),
             ),
           ),
@@ -37,8 +46,15 @@ void main() {
       (WidgetTester tester) async {
         await tester.pumpWidget(
           MaterialApp(
-            home: BlocProvider<StopwatchCubit>.value(
-              value: stopwatchCubit!,
+            home: MultiBlocProvider(
+              providers: <BlocProvider<dynamic>>[
+                BlocProvider<StopwatchCubit>.value(
+                  value: stopwatchCubit!,
+                ),
+                BlocProvider<LapsCubit>.value(
+                  value: lapsCubit!,
+                ),
+              ],
               child: const StopwatchView(),
             ),
           ),
@@ -70,8 +86,15 @@ void main() {
       (WidgetTester tester) async {
         await tester.pumpWidget(
           MaterialApp(
-            home: BlocProvider<StopwatchCubit>.value(
-              value: stopwatchCubit!,
+            home: MultiBlocProvider(
+              providers: <BlocProvider<dynamic>>[
+                BlocProvider<StopwatchCubit>.value(
+                  value: stopwatchCubit!,
+                ),
+                BlocProvider<LapsCubit>.value(
+                  value: lapsCubit!,
+                ),
+              ],
               child: const StopwatchView(),
             ),
           ),
@@ -93,6 +116,175 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(stopwatchCubit!.isRunning, isFalse);
+      },
+    );
+
+    testWidgets(
+      'The lap button should be displayed when the timer is running',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MultiBlocProvider(
+              providers: <BlocProvider<dynamic>>[
+                BlocProvider<StopwatchCubit>.value(
+                  value: stopwatchCubit!,
+                ),
+                BlocProvider<LapsCubit>.value(
+                  value: lapsCubit!,
+                ),
+              ],
+              child: const StopwatchView(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final Finder playButton =
+            find.byKey(const Key('StopwatchView_PlayButton'));
+        expect(playButton, findsOneWidget);
+        await tester.tap(playButton);
+        await tester.pumpAndSettle();
+
+        expect(stopwatchCubit!.isRunning, isTrue);
+
+        final Finder lapButton =
+            find.byKey(const Key('StopwatchView_LapButton'));
+        expect(lapButton, findsOneWidget);
+
+        stopwatchCubit!.stop();
+      },
+    );
+
+    testWidgets(
+      'The lap button should not be displayed when the timer is stopped',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MultiBlocProvider(
+              providers: <BlocProvider<dynamic>>[
+                BlocProvider<StopwatchCubit>.value(
+                  value: stopwatchCubit!,
+                ),
+                BlocProvider<LapsCubit>.value(
+                  value: lapsCubit!,
+                ),
+              ],
+              child: const StopwatchView(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final Finder playButton =
+            find.byKey(const Key('StopwatchView_PlayButton'));
+        expect(playButton, findsOneWidget);
+        await tester.tap(playButton);
+        await tester.pumpAndSettle();
+
+        final Finder stopButton =
+            find.byKey(const Key('StopwatchView_StopButton'));
+        expect(stopButton, findsOneWidget);
+        await tester.tap(stopButton);
+        await tester.pumpAndSettle();
+
+        expect(stopwatchCubit!.isRunning, isFalse);
+
+        final Finder lapButton =
+            find.byKey(const Key('StopwatchView_LapButton'));
+        expect(lapButton, findsNothing);
+      },
+    );
+
+    testWidgets(
+      'A click on the lap button should record a lap',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MultiBlocProvider(
+              providers: <BlocProvider<dynamic>>[
+                BlocProvider<StopwatchCubit>.value(
+                  value: stopwatchCubit!,
+                ),
+                BlocProvider<LapsCubit>.value(
+                  value: lapsCubit!,
+                ),
+              ],
+              child: const StopwatchView(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final Finder playButton =
+            find.byKey(const Key('StopwatchView_PlayButton'));
+        expect(playButton, findsOneWidget);
+        await tester.tap(playButton);
+        await tester.pumpAndSettle();
+
+        expect(stopwatchCubit!.isRunning, isTrue);
+
+        final Finder lapButton =
+            find.byKey(const Key('StopwatchView_LapButton'));
+        expect(lapButton, findsOneWidget);
+        await tester.tap(lapButton);
+        await tester.pumpAndSettle();
+
+        expect(lapsCubit!.state.laps, isNotEmpty);
+
+        stopwatchCubit!.stop();
+      },
+    );
+
+    testWidgets(
+      'A click on the play button should clear the lap(s) recorded',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MultiBlocProvider(
+              providers: <BlocProvider<dynamic>>[
+                BlocProvider<StopwatchCubit>.value(
+                  value: stopwatchCubit!,
+                ),
+                BlocProvider<LapsCubit>.value(
+                  value: lapsCubit!,
+                ),
+              ],
+              child: const StopwatchView(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final Finder playButton =
+            find.byKey(const Key('StopwatchView_PlayButton'));
+        expect(playButton, findsOneWidget);
+        await tester.tap(playButton);
+        await tester.pumpAndSettle();
+
+        expect(stopwatchCubit!.isRunning, isTrue);
+
+        final Finder lapButton =
+            find.byKey(const Key('StopwatchView_LapButton'));
+        expect(lapButton, findsOneWidget);
+        await tester.tap(lapButton);
+        await tester.pumpAndSettle();
+
+        expect(lapsCubit!.state.laps, isNotEmpty);
+
+        final Finder stopButton =
+            find.byKey(const Key('StopwatchView_StopButton'));
+        expect(stopButton, findsOneWidget);
+        await tester.tap(stopButton);
+        await tester.pumpAndSettle();
+
+        expect(stopwatchCubit!.isRunning, isFalse);
+
+        await tester.tap(playButton);
+        await tester.pumpAndSettle();
+
+        expect(lapsCubit!.state.laps, isEmpty);
+
+        stopwatchCubit!.stop();
       },
     );
   });

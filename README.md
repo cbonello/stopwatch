@@ -6,9 +6,11 @@ A simple stopwatch for a fitness app.
 
 - [flutter_bloc](https://pub.dev/packages/flutter_bloc) for state management.
 
+Code was tested on Android, Windows desktop and Flutter web.
+
 ## Testing
 
 ```bash
 $ flutter test test
-00:06 +3: All tests passed!
+00:08 +7: All tests passed!
 ```
