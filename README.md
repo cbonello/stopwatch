@@ -2,6 +2,12 @@
 
 A simple stopwatch for a fitness app.
 
+## Screenshots
+
+Stopwatch Running | Stopwatch Stopped
+--- | ---
+![Running](/docs/running.png?raw=true "Running") | ![Stopped](/docs/stopped.png?raw=true "Stopped")
+
 ## Implementation
 
 - [flutter_bloc](https://pub.dev/packages/flutter_bloc) for state management.
